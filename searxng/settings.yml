@@ -1,0 +1,12 @@
+use_default_settings: true
+
+server:
+  bind_address: "0.0.0.0:8080"
+  secret_key: searxng_secret_key
+
+search:
+  safe_search: 0
+  default_lang: "en"
+  formats:
+    - html
+    - json

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+
+# Environment — never commit credentials
+.env
+.env.local
+.env.*.local
+
+# Next.js build output
+web/.next
+web/out
+
+# Production build
+dist
+build
+
+# OS
+.DS_Store
+.DS_STORE
+Thumbs.db
+
+# Editor
+.idea
+.vscode
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage

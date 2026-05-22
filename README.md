@@ -39,11 +39,7 @@ The agent has a built-in web search tool backed by [SearXNG](https://docs.searxn
 A minimal `searxng/settings.yml` is already included in the repo. Run SearXNG with:
 
 ```bash
-docker run -d \
-  --name searxng \
-  -p 8080:8080 \
-  -v "$(pwd)/searxng:/etc/searxng" \
-  searxng/searxng:latest
+docker run -d compose up
 ```
 
 Then verify it is reachable:

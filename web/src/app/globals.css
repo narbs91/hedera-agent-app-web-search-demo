@@ -139,6 +139,37 @@
   }
 }
 
+/* Streamdown's MarkdownA component hardcodes className="text-primary underline" on every
+   link. The --primary variable resolves to near-black in light mode, making links invisible
+   on the dark user bubble. Overriding --primary within each Response scope is simpler and
+   more reliable than any selector-based override because CSS custom properties cascade by
+   specificity independently of @layer ordering. */
+[data-slot="response"] {
+  --primary: var(--color-blue-600);
+}
+
+/* User bubble is theme-inverted: dark bg in light mode, light bg in dark mode. */
+[data-slot="message-content"][data-role="user"] [data-slot="response"] {
+  --primary: var(--color-blue-300);
+}
+
+.dark [data-slot="response"] {
+  --primary: var(--color-blue-400);
+}
+
+.dark [data-slot="message-content"][data-role="user"] [data-slot="response"] {
+  --primary: var(--color-blue-700);
+}
+
+/* Ensure the underline uses the link's own color (currentColor = blue above),
+   not the inherited parent text color. Also restore underline & offset since
+   the Tailwind preflight's `a { text-decoration: inherit }` strips them. */
+[data-slot="response"] a {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: currentColor;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

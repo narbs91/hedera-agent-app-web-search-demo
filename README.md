@@ -39,7 +39,7 @@ The agent has a built-in web search tool backed by [SearXNG](https://docs.searxn
 A minimal `searxng/settings.yml` is already included in the repo. Run SearXNG with:
 
 ```bash
-docker run -d compose up
+docker compose up -d
 ```
 
 Then verify it is reachable:
@@ -63,6 +63,51 @@ SEARXNG_URL=http://localhost:8080
 ### Disabling web search
 
 If you do not want to run SearXNG, remove `webSearchTool` / `webSearchToolAiSdk` from the tool lists in `cli/index.js` and `web/src/features/chat-hedera/server/toolkit.js`. The agent will fall back to its training data for any question that would otherwise trigger a search.
+
+## Web page fetching (Crawl4AI)
+
+The agent has a built-in `fetch_page` tool backed by [Crawl4AI](https://docs.crawl4ai.com/), a self-hosted web crawler that converts any URL into clean markdown. The agent uses it to read documentation pages, blog posts, HashScan explorer links, or any URL the user provides — automatically stripping navigation, footers, and boilerplate so only the relevant body content is sent to the LLM.
+
+Both the CLI and the web app share the same tool via `shared/crawl-tool.js`.
+
+### Quick start with Docker
+
+Crawl4AI is included in the same `docker-compose.yml` as SearXNG. Start both with:
+
+```bash
+docker compose up -d
+```
+
+Then verify Crawl4AI is reachable:
+
+```bash
+curl -s -X POST http://localhost:11235/crawl \
+  -H "content-type: application/json" \
+  -d '{"urls":["https://example.com"],"crawler_config":{"type":"CrawlerRunConfig","params":{}}}' \
+  | python3 -m json.tool | head -30
+```
+
+The response should be a JSON object with `"success": true` and a `results` array containing the page markdown.
+
+### Environment variables
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `CRAWL4AI_URL` | Base URL of your Crawl4AI instance | `http://localhost:11235` |
+| `CRAWL4AI_API_TOKEN` | Bearer token if the container is started with JWT auth enabled | _(none)_ |
+
+Add to your `.env` if you run Crawl4AI on a different host, port, or with auth:
+
+```
+CRAWL4AI_URL=http://localhost:11235
+CRAWL4AI_API_TOKEN=
+```
+
+Authentication is **disabled by default** in the standard Crawl4AI Docker image. Set `CRAWL4AI_API_TOKEN` only if you started the container with JWT security enabled.
+
+### Disabling web page fetching
+
+If you do not want to run Crawl4AI, remove `crawlTool` / `crawlToolAiSdk` from the tool lists in `cli/index.js` and `web/src/features/chat-hedera/server/toolkit.js`. The agent will still be able to search the web via SearXNG but will not be able to read the full content of individual pages.
 
 ## Third-party plugins
 
@@ -101,6 +146,9 @@ web/                         # Next.js project root
 | `LLM_PROVIDER` | `openai` or `anthropic` |
 | `LLM_MODEL` | Model id; provider-specific defaults apply if unset |
 | `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | Pick the one matching `LLM_PROVIDER` |
+| `SEARXNG_URL` | Base URL of your SearXNG instance | `http://localhost:8080` |
+| `CRAWL4AI_URL` | Base URL of your Crawl4AI instance | `http://localhost:11235` |
+| `CRAWL4AI_API_TOKEN` | Bearer token if Crawl4AI JWT auth is enabled | _(none)_ |
 
 ## Deploying the web app to Vercel
 

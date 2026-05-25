@@ -13,6 +13,7 @@ import { HumanMessage } from "@langchain/core/messages";
 
 import { client, config, hooks, plugins, systemPrompt } from "../shared/config.js";
 import { webSearchTool } from "../shared/web-search-tool.js";
+import { crawlTool } from "../shared/crawl-tool.js";
 
 const toolkit = new HederaLangchainToolkit({
   client,
@@ -26,7 +27,7 @@ const llm = createLangChainLLM();
 
 const agent = createReactAgent({
   llm,
-  tools: [...toolkit.getTools(), webSearchTool],
+  tools: [...toolkit.getTools(), webSearchTool, crawlTool],
   checkpointer: new MemorySaver(),
   prompt: systemPrompt,
 });

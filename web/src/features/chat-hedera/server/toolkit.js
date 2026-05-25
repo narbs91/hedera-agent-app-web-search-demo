@@ -14,6 +14,7 @@ import { getMutatingToolMethods } from "./mutating-tools";
 // because both read these from the same file.
 import { config, hooks, plugins } from "../../../../../shared/config.js";
 import { webSearchToolAiSdk } from "../../../../../shared/web-search-tool.js";
+import { crawlToolAiSdk } from "../../../../../shared/crawl-tool.js";
 
 // Status emitted by mutating tools in `human` mode. Carried inside the standard
 // `{ raw, humanMessage }` envelope so the client uses the same parser path as
@@ -40,7 +41,7 @@ export function createHederaToolkit({ mode }) {
     });
     const baseTools = baseToolkit.getTools();
     return {
-      tools: { ...wrapMutatingToolsForApproval(baseTools, mutatingToolMethods), web_search: webSearchToolAiSdk },
+      tools: { ...wrapMutatingToolsForApproval(baseTools, mutatingToolMethods), web_search: webSearchToolAiSdk, fetch_page: crawlToolAiSdk },
       mutatingToolMethods,
     };
   }
@@ -53,7 +54,7 @@ export function createHederaToolkit({ mode }) {
     },
   });
   return {
-    tools: { ...baseToolkit.getTools(), web_search: webSearchToolAiSdk },
+    tools: { ...baseToolkit.getTools(), web_search: webSearchToolAiSdk, fetch_page: crawlToolAiSdk },
     mutatingToolMethods,
   };
 }
